@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Constelação do nosso amor 🌌</title>
+  <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+  <!-- Fundo -->
+  <canvas id="hearts"></canvas>
+  <canvas id="stars"></canvas>
+  <div class="aura"></div>
+
+  <h1>minha princesa</h1>
+  <p>nunca deixe seu brilho se apagar pois é ele que ilumina minha vida<br>você é muito especial para mim 💖</p>
+
+  <!-- Botão de música -->
+  <button id="music-btn" title="Tocar música">💖</button>
+
+  <!-- Música -->
+  <audio id="music" loop>
+    <source src="Áudio do WhatsApp de 2025-10-08 à(s) 21.35.53_63d38536.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    const music = document.getElementById("music");
+    const btn = document.getElementById("music-btn");
+    let playing = false;
+
+    btn.addEventListener("click", () => {
+      if (!playing) {
+        music.play();
+        playing = true;
+        btn.classList.add("playing");
+      } else {
+        music.pause();
+        playing = false;
+        btn.classList.remove("playing");
+      }
+    });
+
+    // ===========================
+    // CANVAS CONFIG
+    // ===========================
+    const canvasHearts = document.getElementById("hearts");
+    const ctxHearts = canvasHearts.getContext("2d");
+    const canvasStars = document.getElementById("stars");
+    const ctxStars = canvasStars.getContext("2d");
+
+    let w, h;
+    let stars = [];
+    let hearts = [];
+
+    function resize() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvasHearts.width = w;
+      canvasHearts.height = h;
+      canvasStars.width = w;
+      canvasStars.height = h;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    // CORAÇÕES FLUTUANTES
+    function createHeart() {
+      return {
+        x: Math.random() * w,
+        y: h + 10,
+        size: Math.random() * 10 + 8,
+        speed: Math.random() * 1 + 0.5,
+        alpha: Math.random() * 0.6 + 0.2
+      };
+    }
+
+    for (let i = 0; i < 30; i++) hearts.push(createHeart());
+
+    function drawHearts() {
+      ctxHearts.clearRect(0, 0, w, h);
+      hearts.forEach((heart, i) => {
+        heart.y -= heart.speed;
+        if (heart.y < -20) hearts[i] = createHeart();
+
+        ctxHearts.globalAlpha = heart.alpha;
+        ctxHearts.fillStyle = "#ff5ca4";
+        ctxHearts.beginPath();
+        const s = heart.size / 2;
+        ctxHearts.moveTo(heart.x, heart.y);
+        ctxHearts.bezierCurveTo(heart.x - s, heart.y - s, heart.x - s * 1.5, heart.y + s, heart.x, heart.y + s * 1.5);
+        ctxHearts.bezierCurveTo(heart.x + s * 1.5, heart.y + s, heart.x + s, heart.y - s, heart.x, heart.y);
+        ctxHearts.fill();
+      });
+      requestAnimationFrame(drawHearts);
+    }
+
+    drawHearts();
+
+    // ESTRELAS E CORAÇÃO
+    const numStars = 300;
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        radius: Math.random() * 1.5,
+        alpha: Math.random(),
+        dx: (Math.random() - 0.5) * 0.2,
+        dy: (Math.random() - 0.5) * 0.2
+      });
+    }
+
+    function drawHeartShape(x, y, size) {
+      const points = [];
+      for (let t = 0; t < Math.PI * 2; t += 0.1) {
+        const xh = size * 16 * Math.pow(Math.sin(t), 3);
+        const yh = -size * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        points.push({ x: x + xh, y: y + yh });
+      }
+      return points;
+    }
+
+    const heartStars = drawHeartShape(window.innerWidth / 2, window.innerHeight / 2.5, 10);
+
+    function animateStars() {
+      ctxStars.clearRect(0, 0, w, h);
+      ctxStars.fillStyle = "#fff";
+
+      stars.forEach(s => {
+        s.x += s.dx;
+        s.y += s.dy;
+        if (s.x < 0 || s.x > w) s.dx *= -1;
+        if (s.y < 0 || s.y > h) s.dy *= -1;
+        ctxStars.globalAlpha = 0.5 + 0.5 * Math.sin(Date.now() * 0.001 + s.alpha * 10);
+        ctxStars.beginPath();
+        ctxStars.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctxStars.fill();
+      });
+
+      ctxStars.globalAlpha = 1;
+      ctxStars.fillStyle = "#ff99cc";
+      heartStars.forEach((p, i) => {
+        const blink = Math.sin(Date.now() * 0.002 + i) * 0.5 + 0.5;
+        ctxStars.globalAlpha = 0.5 + blink * 0.5;
+        ctxStars.beginPath();
+        ctxStars.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+        ctxStars.fill();
+      });
+
+      requestAnimationFrame(animateStars);
+    }
+
+    animateStars();
+  </script>
+</body>
+</html>
